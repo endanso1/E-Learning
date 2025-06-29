@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Course Viewer – Inside the Chip</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0c1d3c;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .btn-primary {
+      background-color: #ffd700;
+      color: #0c1d3c;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #e6c200;
+    }
+    .course-title {
+      color: #ffd700;
+    }
+    .note-box {
+      background: #122850;
+      padding: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+    <a href="lms-dashboard.html" class="btn btn-primary btn-lg mt-4 mx-3 mb-3 px-5"
+              >Back to Courses</a
+  <div class="container py-5">
+    <h1 class="course-title mb-3" id="courseTitle">Loading...</h1>
+    <div class="ratio ratio-16x9 mb-4">
+      <video id="courseVideo" controls>
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <div class="note-box mb-4">
+      <h5>Course Notes</h5>
+      <p id="courseNotes">Please wait while notes load...</p>
+    </div>
+    <a href="#" id="quizLink" class="btn btn-primary">Take Quiz</a>
+  </div>
+
+  <script>
+    const courseData = {
+      1: {
+        title: "Microprocessors 101",
+        video: "videos/design_phase.mp4",
+        notes: "Learn about the central processing unit, ALU, control unit, and how instructions flow through a processor.",
+        quiz: "quiz.html?course=1"
+      },
+      2: {
+        title: "Arduino with Microcontrollers",
+        video: "videos/etching_process.mp4",
+        notes: "Dive into embedded systems using Arduino, interfacing with sensors and output devices.",
+        quiz: "quiz.html?course=2"
+      },
+      3: {
+        title: "Chip Manufacturing Process",
+        video: "videos/manufacturing.mp4",
+        notes: "Understand the full pipeline from circuit design, photolithography, doping, and chip packaging.",
+        quiz: "quiz.html?course=3"
+      }
+    };
+
+    function getCourseId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("id");
+    }
+
+    const courseId = getCourseId();
+    const course = courseData[courseId];
+
+    if (course) {
+      document.getElementById("courseTitle").innerText = course.title;
+      document.getElementById("courseVideo").querySelector("source").src = course.video;
+      document.getElementById("courseVideo").load();
+      document.getElementById("courseNotes").innerText = course.notes;
+      document.getElementById("quizLink").href = course.quiz;
+    } else {
+      document.getElementById("courseTitle").innerText = "Course Not Found";
+      document.getElementById("courseNotes").innerText = "Invalid course ID. Please go back to the dashboard.";
+      document.getElementById("quizLink").style.display = "none";
+    }
+  </script>
+</body>
+</html>
