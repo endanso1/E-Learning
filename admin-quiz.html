@@ -33,7 +33,7 @@
     >
 
     <div class="container py-5">
-      <h2 class="text-warning mb-4">🛠️ Firebase Quiz Manager</h2>
+      <h2 class="text-warning mb-4">🛠️ Quiz Manager</h2>
 
       <!-- Quiz Form -->
       <div class="form-section">
@@ -77,22 +77,26 @@
       <!-- Display Questions -->
       <h4 class="text-warning">📋 Course Questions</h4>
       <div id="questionList"></div>
+
+      <h4 class="text-warning mt-5">🧑‍🎓 Student Quiz Results</h4>
+      <div id="resultsList"></div>
     </div>
 
     <!-- Firebase & Quiz Logic -->
-     
 
     <script type="module">
+      import {
+        getAuth,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
-      import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-
-// Protect page
-const auth = getAuth();
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "admin-login.html"; // redirect if not signed in
-  }
-});
+      // Protect page
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          window.location.href = "admin-login.html"; // redirect if not signed in
+        }
+      });
 
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
       import {
@@ -209,8 +213,35 @@ onAuthStateChanged(auth, (user) => {
         }
       });
 
+      async function loadResults() {
+        const resultsDiv = document.getElementById("resultsList");
+        resultsDiv.innerHTML = "";
+
+        const snapshot = await getDocs(collection(db, "results"));
+        if (snapshot.empty) {
+          resultsDiv.innerHTML =
+            "<p class='text-muted'>No quiz results submitted yet.</p>";
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          resultsDiv.innerHTML += `
+      <div class="mb-3 p-3 bg-dark rounded">
+        <strong>Name:</strong> ${data.name}<br/>
+        <strong>Index No.:</strong> ${data.index}<br/>
+        <strong>Course:</strong> ${data.courseId}<br/>
+        <strong>Score:</strong> ${data.score}/${data.total}<br/>
+        <strong>Submitted:</strong> ${new Date(data.timestamp).toLocaleString()}
+      </div>
+    `;
+        });
+      }
+
       // 🔁 Load on start
       loadQuestions();
+      loadQuestions();
+      loadResults();
     </script>
     <script type="module" src="admin.js"></script>
   </body>
