@@ -28,15 +28,28 @@
   </style>
 </head>
 <body>
-    <a href="course.html" class="btn btn-primary btn-lg mt-4 mx-3 mb-3 px-5"
-              >Back</a
+  <a href="course.html" class="btn btn-primary btn-lg mt-4 mx-3 mb-3 px-5">Back</a>
 
   <div class="container py-5">
     <h2 class="mb-4 text-warning">📋 Course Quiz</h2>
+    
     <form id="quizForm">
-      <div id="quizContainer"></div>
-      <button type="submit" class="btn btn-primary mt-3">Submit Quiz</button>
-    </form>
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input type="text" id="studentName" class="form-control " required style="width: 600px;"/>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Index Number</label>
+    <input type="text" id="indexNumber" class="form-control" style="width: 600px;" required />
+  </div>
+
+  <div id="quizContainer"></div>
+
+  <button type="submit" class="btn btn-primary mt-3">Submit Quiz</button>
+</form>
+
+<div id="result" class="mt-4 fw-bold"></div>
+
     <div id="result" class="mt-4 fw-bold"></div>
   </div>
 
@@ -52,6 +65,26 @@
           question: "Which unit controls the execution of instructions?",
           options: ["Memory", "ALU", "Control Unit", "Bus"],
           answer: "Control Unit"
+        },
+        {
+          question: "What is the primary function of the Control Unit (CU)?",
+          options: ["Execute arithmetic operations", "Store data", "Decode instructions", "Connect to the internet"],
+          answer: "Decode instructions"
+        },
+        {
+          question: "Which component handles logical comparisons in a CPU?",
+          options: ["Register", "Control Unit", "ALU", "Cache"],
+          answer: "ALU"
+        },
+        {
+          question: "Registers are used for:",
+          options: ["Long-term storage", "Temporary data storage", "Networking", "Cooling the CPU"],
+          answer: "Temporary data storage"
+        },
+        {
+          question: "What does 'fetch' mean in the instruction cycle?",
+          options: ["Store data in memory", "Retrieve instruction from memory", "Perform calculation", "Halt the program"],
+          answer: "Retrieve instruction from memory"
         }
       ],
       2: [
@@ -64,6 +97,26 @@
           question: "What does PWM stand for in microcontroller context?",
           options: ["Pulse Width Modulation", "Power Wave Motion", "Partial Wiring Method", "Programmed Waveform Model"],
           answer: "Pulse Width Modulation"
+        },
+        {
+          question: "Which language is used to program Arduino?",
+          options: ["Python", "Assembly", "C/C++", "Java"],
+          answer: "C/C++"
+        },
+        {
+          question: "What does the digitalRead() function do?",
+          options: ["Writes an analog value", "Reads a digital pin", "Starts PWM", "Initializes serial communication"],
+          answer: "Reads a digital pin"
+        },
+        {
+          question: "Which of these is a digital output pin on Arduino Uno?",
+          options: ["A0", "A5", "13", "RX"],
+          answer: "13"
+        },
+        {
+          question: "What is the typical operating voltage for an Arduino Uno?",
+          options: ["3.3V", "5V", "12V", "1.5V"],
+          answer: "5V"
         }
       ],
       3: [
@@ -76,6 +129,26 @@
           question: "What is lithography used for?",
           options: ["Soldering chips", "Printing chip patterns", "Cooling systems", "Memory expansion"],
           answer: "Printing chip patterns"
+        },
+        {
+          question: "Which tool is primarily used for chip layout design?",
+          options: ["Unity", "Cinema 4D", "EDA Software", "MATLAB"],
+          answer: "EDA Software"
+        },
+        {
+          question: "What is the purpose of ion implantation?",
+          options: ["Increase power", "Modify semiconductor properties", "Cool the chip", "Display graphics"],
+          answer: "Modify semiconductor properties"
+        },
+        {
+          question: "Which step involves adding metal layers to a chip?",
+          options: ["Packaging", "Doping", "Metallization", "Testing"],
+          answer: "Metallization"
+        },
+        {
+          question: "Why is lithography important in chip manufacturing?",
+          options: ["To test chips", "To package chips", "To print tiny circuit patterns", "To clean the chip"],
+          answer: "To print tiny circuit patterns"
         }
       ]
     };
@@ -118,8 +191,11 @@
       const result = document.getElementById("result");
       result.innerHTML = `✅ You scored <span class="text-warning">${score}</span> out of ${questions.length}`;
     });
+
+
+    
+
+
   </script>
 </body>
 </html>
-
-
