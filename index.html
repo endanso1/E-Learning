@@ -34,6 +34,13 @@
       #logo {
         height: 40px;
         width: 40px;
+        margin-left: -12px;
+      }
+      #logo-text{
+        color: #fff;
+        text-decoration: none;
+        margin-top: 5px;
+        font-size: 16px;
       }
       .hero {
         background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
@@ -84,7 +91,54 @@
       footer {
         background: #0a172f;
         color: #bbb;
+        height: 200px;
       }
+
+
+      /* Navbar and Footer: MEDIA QUERIES */
+@media (max-width: 576px) {
+  #logo-text {
+    font-size: 0.85rem;
+    text-align: center;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 0.5rem;
+  }
+
+  #logo {
+    height: 30px;
+    width: 30px;
+    margin-left: 0;
+  }
+
+  .navbar-nav .nav-link {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .navbar-nav {
+    background-color: #0c1d3c;
+    padding-bottom: 20px;
+    margin-top: 8px;
+    border-radius: 0 0 10px 10px;
+  }
+
+  footer {
+    font-size: 0.75rem;
+    padding: 1rem;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  footer img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0.5rem;
+  }
+}
+
     </style>
   </head>
   <body>
@@ -93,8 +147,8 @@
       class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm"
     >
       <div class="container">
-        <a class="navbar-brand fw-bold" href="#"
-          ><img src="logoGctu.png" alt="logo" id="logo" /> E-Learning Platform</a
+        <a class="fw-bold" href="#"
+          id="logo-text"><img src="logoGctu.png" alt="logo" id="logo" /> Adaptive E-learning platform with Augmented Reality and Virtual Reality</a
         >
         <button
           class="navbar-toggler"
@@ -109,7 +163,7 @@
             <li class="nav-item">
               <a class="nav-link" href="#intro">About</a>
             </li>
-            <li class="nav-item"><a class="nav-link" href="#lab">3D Lab</a></li>
+            <!-- <li class="nav-item"><a class="nav-link" href="#lab">3D Lab</a></li> -->
             <li class="nav-item">
               <a class="nav-link" href="#process">Manufacturing</a>
             </li>
@@ -768,7 +822,7 @@
     <footer class="text-center py-4">
       <img src="logoGctu.png" alt="logo" style="width: 50px; height: 50px" />
       <small
-        >&copy; 2025 Microprocessors and Microcontrollers. An E-Learning
+        >&copy; 2025 SCIENCE, TECHNOLOGY, ENGINEERING, MATHEMATICS, EDUCATION (STEME), A FOCUS ON MICROPROCESSORS AND MICROCONTOLLERS IN COMPUTER SCIENCE.<br> An E-Learning
         platform developed by Apostle Isaac Frank Agidi</small
       >
     </footer>
