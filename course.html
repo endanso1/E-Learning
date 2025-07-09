@@ -107,12 +107,12 @@
     <h1 class="course-title mb-4" id="courseTitle">Loading...</h1>
 
     <!-- ✅ Properly wrapped video -->
-    <div class="video-wrapper mb-4">
+    <!-- <div class="video-wrapper mb-4">
       <video id="courseVideo" controls class="rounded">
         <source src="" type="video/mp4">
         Your browser does not support the video tag.
-      </video>
-    </div>
+      </video> -->
+      <div id="videoContainer" class="mb-4"></div>
 
     <div class="note-box mb-4">
       <h5>Course Notes</h5>
@@ -124,46 +124,72 @@
 
   <!-- ✅ JavaScript: Dynamic course loading -->
   <script>
-    const courseData = {
-      1: {
-        title: "Microprocessors 101",
-        video: "media/alu.mp4",
-        notes: "Learn about the central processing unit, ALU, control unit, and how instructions flow through a processor.",
-        quiz: "quiz.html?course=1"
-      },
-      2: {
-        title: "Arduino with Microcontrollers",
-        video: "media/Adruino.mp4",
-        notes: "Dive into embedded systems using Arduino, interfacing with sensors and output devices.",
-        quiz: "quiz.html?course=2"
-      },
-      3: {
-        title: "Chip Manufacturing Process",
-        video: "media/manufacturing.mp4",
-        notes: "Understand the full pipeline from circuit design, photolithography, doping, and chip packaging.",
-        quiz: "quiz.html?course=3"
-      }
-    };
-
-    function getCourseId() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get("id");
+  const courseData = {
+    1: {
+      title: "Microprocessors 101",
+      videoType: "mp4",
+      video: "media/alu.mp4",
+      notes: "Learn about the central processing unit, ALU, control unit, and how instructions flow through a processor.",
+      quiz: "quiz.html?course=1"
+    },
+    2: {
+      title: "Arduino with Microcontrollers",
+      videoType: "youtube",
+      video: "https://www.youtube.com/embed/_9cwWpXnrLE",
+      notes: "Dive into embedded systems using Arduino, interfacing with sensors and output devices.",
+      quiz: "quiz.html?course=2"
+    },
+    3: {
+      title: "Chip Manufacturing Process",
+      videoType: "mp4",
+      video: "media/manufacturing.mp4",
+      notes: "Understand the full pipeline from circuit design, photolithography, doping, and chip packaging.",
+      quiz: "quiz.html?course=3"
     }
+  };
 
-    const courseId = getCourseId();
-    const course = courseData[courseId];
+  function getCourseId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("id");
+  }
 
-    if (course) {
-      document.getElementById("courseTitle").innerText = course.title;
-      document.getElementById("courseVideo").querySelector("source").src = course.video;
-      document.getElementById("courseVideo").load();
-      document.getElementById("courseNotes").innerText = course.notes;
-      document.getElementById("quizLink").href = course.quiz;
+  const courseId = getCourseId();
+  const course = courseData[courseId];
+
+  if (course) {
+    document.getElementById("courseTitle").innerText = course.title;
+    document.getElementById("courseNotes").innerText = course.notes;
+    document.getElementById("quizLink").href = course.quiz;
+
+    const videoContainer = document.getElementById("videoContainer");
+
+    if (course.videoType === "youtube") {
+      videoContainer.innerHTML = `
+        <div class="ratio ratio-16x9">
+          <iframe class="w-100 rounded" src="${course.video}" 
+            title="${course.title}" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      `;
     } else {
-      document.getElementById("courseTitle").innerText = "Course Not Found";
-      document.getElementById("courseNotes").innerText = "Invalid course ID. Please go back to the dashboard.";
-      document.getElementById("quizLink").style.display = "none";
+      videoContainer.innerHTML = `
+        <div class="ratio ratio-16x9">
+          <video controls class="w-100 rounded">
+            <source src="${course.video}" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      `;
     }
-  </script>
+  } else {
+    document.getElementById("courseTitle").innerText = "Course Not Found";
+    document.getElementById("courseNotes").innerText = "Invalid course ID. Please go back to the dashboard.";
+    document.getElementById("quizLink").style.display = "none";
+  }
+</script>
+
 </body>
 </html>
