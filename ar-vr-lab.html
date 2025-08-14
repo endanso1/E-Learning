@@ -32,7 +32,7 @@
     model-viewer {
       width: 100%;
       height: 500px;
-      background: #000;
+      background: #000 !important;
       border-radius: 10px;
     }
 
@@ -60,15 +60,35 @@
       color: #ccc;
       padding: 20px;
       text-align: center;
+      font-size: 0.9rem;
     }
 
+    /* Info box styling */
+    .note-box {
+      background: #122850;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 40px;
+    }
+
+    .note-box h4, .note-box h5 {
+      color: #ffd700;
+    }
+
+    .note-box a {
+      color: #00c2ff;
+    }
+
+    /* Mobile adjustments */
     @media (max-width: 576px) {
       h1 {
         font-size: 1.5rem;
       }
-
       model-viewer {
         height: 350px;
+      }
+      footer {
+        font-size: 0.75rem;
       }
     }
   </style>
@@ -82,9 +102,20 @@
     <p class="lead">Interact with a microcontroller in Augmented and Virtual Reality</p>
   </div>
 
+  <!-- Visitor Note -->
+  <div id="visitorNote" class="container note-box">
+    <h5>ℹ️ Important Notes</h5>
+    <ul>
+      <li>📱 <b>AR Mode</b> works only on mobile devices that support <b>ARCore (Android)</b> or <b>ARKit (iOS)</b>.</li>
+      <li>🕶️ <b>VR Mode</b> requires a <b>WebXR-enabled VR headset</b> such as Meta Quest, HTC Vive, or Windows Mixed Reality.</li>
+      <li>💻 On desktop browsers without a headset, you can still rotate, zoom, and explore the 3D model interactively.</li>
+    </ul>
+  </div>
+
   <!-- AR/VR Lab -->
   <div class="container lab-section">
     <model-viewer
+      id="chipViewer"
       src="media/chip.glb"
       alt="Microcontroller 3D Model"
       ar
@@ -94,11 +125,54 @@
       auto-rotate
       shadow-intensity="1"
       poster="media/vr_ar4.jpg"
-    >
+      reveal="manual">
+      
+      <!-- Custom AR button -->
       <button slot="ar-button" class="btn btn-primary mt-3">📱 View in AR</button>
     </model-viewer>
 
+    <!-- VR button -->
     <button class="btn btn-success mt-4" onclick="enterVR()">🕶️ Enter VR Mode</button>
+  </div>
+
+  <!-- ✅ AR/VR Usage Guide -->
+  <div class="container note-box">
+    <h4>ℹ️ AR/VR Usage Guide</h4>
+    <p>
+      Our AR/VR Microcontroller Lab allows you to interact with a 3D chip model 
+      using <b>Augmented Reality (AR)</b> or <b>Virtual Reality (VR)</b>.  
+      Please check the requirements below before starting.
+    </p>
+
+    <h5>📱 Supported Devices for AR</h5>
+    <ul>
+      <li><b>Android:</b> Google Chrome with <i>Google Play Services for AR</i>.  
+          <a href="https://play.google.com/store/apps/details?id=com.google.ar.core" target="_blank">Download here</a>.</li>
+      <li><b>iOS:</b> Safari browser with iOS 12+ (Quick Look support for <code>.usdz</code> models).</li>
+      <li><b>Desktop:</b> Limited AR support; recommended on mobile devices.</li>
+    </ul>
+
+    <h5>🕶 Supported Devices for VR</h5>
+    <ul>
+      <li><b>Android:</b> Chrome + VR headset (Oculus Quest, Pico, etc.).</li>
+      <li><b>Desktop (Windows/Mac):</b> Chrome/Edge + WebXR headset (HTC Vive, Oculus Rift, etc.).</li>
+      <li><b>iOS:</b> Safari does not support WebXR VR mode yet.</li>
+    </ul>
+
+    <h5>⚙️ Setup Procedure</h5>
+    <ol>
+      <li>Open this page in <b>Google Chrome</b> (Android) or <b>Safari</b> (iOS).</li>
+      <li>Tap the <b>📱 View in AR</b> button.  
+          - Android → Scene Viewer opens.  
+          - iOS → Quick Look opens.</li>
+      <li>Click <b>🕶 Enter VR Mode</b> if using a VR headset with WebXR support.</li>
+      <li>If the 3D model does not load, refresh or wait for the poster to disappear.</li>
+    </ol>
+
+    <p class="text-danger lead mt-3">
+      ⚠️ If you don’t see the AR/VR buttons, your device or browser may not support it. 
+      Update your browser or try another device.
+    </p>
   </div>
 
   <!-- Footer -->
@@ -131,6 +205,13 @@
         alert("⚠️ VR button not found in the model-viewer. Ensure the model is fully loaded.");
       }
     }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const viewer = document.getElementById("chipViewer");
+      setTimeout(() => {
+        viewer.dismissPoster(); // reveal 3D model after 3s
+      }, 3000);
+    });
   </script>
 
 </body>
