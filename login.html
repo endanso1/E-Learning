@@ -43,72 +43,70 @@
     </form>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
-      authDomain: "lms-platform-944d6.firebaseapp.com",
-      projectId: "lms-platform-944d6",
-      storageBucket: "lms-platform-944d6.appspot.com",
-      messagingSenderId: "273204688964",
-      appId: "1:273204688964:web:3373974c9c61fac3872411"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
+    authDomain: "lms-platform-944d6.firebaseapp.com",
+    projectId: "lms-platform-944d6",
+    storageBucket: "lms-platform-944d6.appspot.com",
+    messagingSenderId: "273204688964",
+    appId: "1:273204688964:web:3373974c9c61fac3872411"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    const form = document.getElementById("loginForm");
-    const msg = document.getElementById("loginMessage");
+  const form = document.getElementById("loginForm");
+  const msg = document.getElementById("loginMessage");
 
-    window.togglePassword = function() {
-      const field = document.getElementById("password");
-      field.type = field.type === "password" ? "text" : "password";
-    };
+  window.togglePassword = function() {
+    const field = document.getElementById("password");
+    field.type = field.type === "password" ? "text" : "password";
+  };
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-      try {
-        const userCred = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCred.user;
+    try {
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCred.user;
 
-        // ✅ Get role from Firestore
-        const snap = await getDoc(doc(db, "users", user.uid));
-        let role = "student"; // default fallback
-        if (snap.exists()) {
-          role = snap.data().role || "student";
+      const snap = await getDoc(doc(db, "users", user.uid));
+      let role = "student";
+      if (snap.exists()) role = snap.data().role || "student";
+
+      msg.textContent = "✅ Login successful! Redirecting...";
+      msg.className = "text-success text-center";
+
+      setTimeout(() => {
+        if (role === "admin") {
+          window.location.href = "admin-quiz.html";
+        } else {
+          window.location.href = "lms-dashboard.html";
         }
+      }, 1500);
 
-        msg.textContent = "✅ Login successful! Redirecting...";
-        msg.className = "text-success text-center";
-
-        setTimeout(() => {
-          if (role === "admin") {
-            window.location.href = "admin-quiz.html";
-          } else {
-            window.location.href = "lms-dashboard.html";
-          }
-        }, 1500);
-
-      } catch (error) {
-        let errorMessage = "";
-        switch (error.code) {
-          case "auth/invalid-email": errorMessage = "❌ Invalid email address."; break;
-          case "auth/user-not-found": errorMessage = "⚠️ No account found with this email."; break;
-          case "auth/wrong-password": errorMessage = "🔑 Incorrect password."; break;
-          case "auth/too-many-requests": errorMessage = "🚫 Too many attempts. Try later."; break;
-          default: errorMessage = "❌ " + error.message;
-        }
-        msg.textContent = errorMessage;
-        msg.className = "text-danger text-center";
+    } catch (error) {
+      let errorMessage = "";
+      switch (error.code) {
+        case "auth/invalid-email": errorMessage = "❌ Invalid email."; break;
+        case "auth/user-not-found": errorMessage = "⚠️ No account found."; break;
+        case "auth/wrong-password": errorMessage = "🔑 Incorrect password."; break;
+        case "auth/too-many-requests": errorMessage = "🚫 Too many attempts. Try later."; break;
+        default: errorMessage = "❌ " + error.message;
       }
-    });
-  </script>
+      msg.textContent = errorMessage;
+      msg.className = "text-danger text-center";
+    }
+  });
+</script>
+
 </body>
 </html>

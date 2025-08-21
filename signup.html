@@ -90,93 +90,77 @@
 
   <!-- Firebase Signup Script -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
-      authDomain: "lms-platform-944d6.firebaseapp.com",
-      projectId: "lms-platform-944d6",
-      storageBucket: "lms-platform-944d6.appspot.com",
-      messagingSenderId: "273204688964",
-      appId: "1:273204688964:web:3373974c9c61fac3872411"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
+    authDomain: "lms-platform-944d6.firebaseapp.com",
+    projectId: "lms-platform-944d6",
+    storageBucket: "lms-platform-944d6.appspot.com",
+    messagingSenderId: "273204688964",
+    appId: "1:273204688964:web:3373974c9c61fac3872411"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    // Password toggle
-    window.togglePassword = function(fieldId, btn) {
-      const field = document.getElementById(fieldId);
-      const icon = btn.querySelector("i");
-      if (field.type === "password") {
-        field.type = "text";
-        icon.classList.replace("bi-eye", "bi-eye-slash");
-      } else {
-        field.type = "password";
-        icon.classList.replace("bi-eye-slash", "bi-eye");
+  const form = document.getElementById("signupForm");
+  const msg = document.getElementById("signupMessage");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const phone = document.getElementById("phone").value.trim();
+    const dob = document.getElementById("dob").value;
+
+    if (password !== confirmPassword) {
+      msg.textContent = "❌ Passwords do not match!";
+      msg.className = "text-danger text-center";
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await setDoc(doc(db, "users", user.uid), {
+        fullName,
+        email,
+        username,
+        phone,
+        dob,
+        role: "student",  // ✅ Every signup is student
+        createdAt: new Date().toISOString()
+      });
+
+      msg.textContent = "✅ Account created successfully!";
+      msg.className = "text-success text-center";
+
+      setTimeout(() => {
+        window.location.href = "lms-dashboard.html";
+      }, 1500);
+
+    } catch (error) {
+      let errorMessage = "";
+      switch (error.code) {
+        case "auth/email-already-in-use": errorMessage = "⚠️ Email already registered."; break;
+        case "auth/invalid-email": errorMessage = "❌ Invalid email address."; break;
+        case "auth/weak-password": errorMessage = "🔑 Password must be at least 6 characters."; break;
+        default: errorMessage = "❌ " + error.message;
       }
-    };
+      msg.textContent = errorMessage;
+      msg.className = "text-danger text-center";
+    }
+  });
+</script>
 
-    // Form handling
-    const form = document.getElementById("signupForm");
-    const msg = document.getElementById("signupMessage");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const fullName = document.getElementById("fullName").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
-      const phone = document.getElementById("phone").value.trim();
-      const dob = document.getElementById("dob").value;
-
-      if (password !== confirmPassword) {
-        msg.textContent = "❌ Passwords do not match!";
-        msg.className = "text-danger text-center";
-        return;
-      }
-
-      try {
-        // ✅ Create account with Firebase Auth
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        // ✅ Save extra details in Firestore with default role
-        await setDoc(doc(db, "users", user.uid), {
-          fullName,
-          email,
-          username,
-          phone,
-          dob,
-          role: "student",   // 👈 Default role
-          createdAt: new Date().toISOString()
-        });
-
-        msg.textContent = "✅ Account created successfully!";
-        msg.className = "text-success text-center";
-
-        // Redirect to student dashboard
-        setTimeout(() => {
-          window.location.href = "lms-dashboard.html";
-        }, 1500);
-
-      } catch (error) {
-        let errorMessage = "";
-        switch (error.code) {
-          case "auth/email-already-in-use": errorMessage = "⚠️ This email is already registered. Try logging in instead."; break;
-          case "auth/invalid-email": errorMessage = "❌ Please enter a valid email address."; break;
-          case "auth/weak-password": errorMessage = "🔑 Password must be at least 6 characters."; break;
-          default: errorMessage = "❌ " + error.message;
-        }
-        msg.textContent = errorMessage;
-        msg.className = "text-danger text-center";
-      }
-    });
-  </script>
 </body>
 </html>
