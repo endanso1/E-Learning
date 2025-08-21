@@ -103,15 +103,8 @@
   <!-- Firebase SDKs -->
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-  import { 
-    getAuth, 
-    signInWithEmailAndPassword 
-  } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-  import { 
-    getFirestore, 
-    doc, 
-    getDoc 
-  } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
@@ -131,6 +124,9 @@
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    message.textContent = "⏳ Checking credentials...";
+    message.className = "text-info text-center";
+
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
 
@@ -138,14 +134,21 @@
       const userCred = await signInWithEmailAndPassword(auth, email, password);
       const user = userCred.user;
 
-      // ✅ Check role in Firestore
       const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists() && snap.data().role === "admin") {
-        window.location.href = "admin-quiz.html";
-      } else {
-        message.textContent = "🚫 Access denied. You are not an admin.";
+      if (!snap.exists()) {
+        message.textContent = "⚠️ Account not found in database.";
+        return;
       }
 
+      const role = snap.data().role || "student";
+      if (role === "admin") {
+        message.textContent = "✅ Welcome Admin! Redirecting...";
+        message.className = "text-success text-center";
+        setTimeout(() => { window.location.href = "admin-quiz.html"; }, 1500);
+      } else {
+        message.textContent = "🚫 Access denied. Students cannot log in here.";
+        message.className = "text-danger text-center";
+      }
     } catch (err) {
       let errorMessage = "";
       switch (err.code) {
@@ -156,9 +159,11 @@
         default: errorMessage = "❌ " + err.message;
       }
       message.textContent = errorMessage;
+      message.className = "text-danger text-center";
     }
   });
 </script>
+
 
 </body>
 </html>
