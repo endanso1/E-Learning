@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign Up – Create Account</title>
   <link rel="icon" href="logoGctu.png" type="image/png" />
-
-  <!-- Bootstrap CSS & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
 
@@ -100,7 +98,7 @@
       apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
       authDomain: "lms-platform-944d6.firebaseapp.com",
       projectId: "lms-platform-944d6",
-      storageBucket: "lms-platform-944d6.appspot.com",  
+      storageBucket: "lms-platform-944d6.appspot.com",
       messagingSenderId: "273204688964",
       appId: "1:273204688964:web:3373974c9c61fac3872411"
     };
@@ -144,47 +142,37 @@
       }
 
       try {
-        // Create account with Firebase Auth
+        // ✅ Create account with Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Save extra details in Firestore
+        // ✅ Save extra details in Firestore with default role
         await setDoc(doc(db, "users", user.uid), {
           fullName,
           email,
           username,
           phone,
           dob,
+          role: "student",   // 👈 Default role
           createdAt: new Date().toISOString()
         });
-
-        console.log("✅ Firestore document created for:", user.uid, fullName);
 
         msg.textContent = "✅ Account created successfully!";
         msg.className = "text-success text-center";
 
-        // Redirect directly to dashboard
+        // Redirect to student dashboard
         setTimeout(() => {
           window.location.href = "lms-dashboard.html";
         }, 1500);
 
       } catch (error) {
         let errorMessage = "";
-
         switch (error.code) {
-          case "auth/email-already-in-use":
-            errorMessage = "⚠️ This email is already registered. Try logging in instead.";
-            break;
-          case "auth/invalid-email":
-            errorMessage = "❌ Please enter a valid email address.";
-            break;
-          case "auth/weak-password":
-            errorMessage = "🔑 Password must be at least 6 characters.";
-            break;
-          default:
-            errorMessage = "❌ " + error.message;
+          case "auth/email-already-in-use": errorMessage = "⚠️ This email is already registered. Try logging in instead."; break;
+          case "auth/invalid-email": errorMessage = "❌ Please enter a valid email address."; break;
+          case "auth/weak-password": errorMessage = "🔑 Password must be at least 6 characters."; break;
+          default: errorMessage = "❌ " + error.message;
         }
-
         msg.textContent = errorMessage;
         msg.className = "text-danger text-center";
       }
