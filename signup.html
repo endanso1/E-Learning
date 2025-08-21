@@ -20,7 +20,7 @@
   <a href="index.html" class="btn btn-primary btn-lg mt-4 mx-5 mb-3 px-5" style="background-color:#122850; color:#fff;">Back to Mainsite</a>
 
   <div class="form-box">
-    <h3 class="text-center text-warning mb-4">📝 Create Your Account</h3>
+    <h3 class="text-center text-warning mb-4">📝 Create Your Student Account</h3>
     <form id="signupForm">
       <div class="mb-3">
         <label for="fullName" class="form-label">Full Name</label>
@@ -71,78 +71,70 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
-      authDomain: "lms-platform-944d6.firebaseapp.com",
-      projectId: "lms-platform-944d6",
-      storageBucket: "lms-platform-944d6.appspot.com",
-      messagingSenderId: "273204688964",
-      appId: "1:273204688964:web:3373974c9c61fac3872411"
-    };
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "lms-platform-944d6.firebaseapp.com",
+    projectId: "lms-platform-944d6",
+    storageBucket: "lms-platform-944d6.appspot.com",
+    messagingSenderId: "273204688964",
+    appId: "1:273204688964:web:3373974c9c61fac3872411"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    window.togglePassword = function(fieldId, btn) {
-      const field = document.getElementById(fieldId);
-      const icon = btn.querySelector("i");
-      if (field.type === "password") {
-        field.type = "text"; icon.classList.replace("bi-eye", "bi-eye-slash");
-      } else {
-        field.type = "password"; icon.classList.replace("bi-eye-slash", "bi-eye");
+  const form = document.getElementById("signupForm");
+  const msg = document.getElementById("signupMessage");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fullName = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const phone = document.getElementById("phone").value.trim();
+    const dob = document.getElementById("dob").value;
+
+    if (password !== confirmPassword) {
+      msg.textContent = "❌ Passwords do not match!";
+      msg.className = "text-danger text-center";
+      return;
+    }
+
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCred.user;
+
+      // Save user info in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        fullName, email, username, phone, dob,
+        role: "student",
+        createdAt: new Date().toISOString()
+      });
+
+      msg.textContent = "✅ Account created successfully!";
+      msg.className = "text-success text-center";
+      setTimeout(() => { window.location.href = "lms-dashboard.html"; }, 1500);
+
+    } catch (error) {
+      let errorMessage = "";
+      switch (error.code) {
+        case "auth/email-already-in-use": errorMessage = "⚠️ Email already registered."; break;
+        case "auth/invalid-email": errorMessage = "❌ Invalid email address."; break;
+        case "auth/weak-password": errorMessage = "🔑 Password must be at least 6 characters."; break;
+        default: errorMessage = "❌ " + error.message;
       }
-    };
+      msg.textContent = errorMessage;
+      msg.className = "text-danger text-center";
+    }
+  });
+</script>
 
-    const form = document.getElementById("signupForm");
-    const msg = document.getElementById("signupMessage");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const fullName = document.getElementById("fullName").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
-      const phone = document.getElementById("phone").value.trim();
-      const dob = document.getElementById("dob").value;
-
-      if (password !== confirmPassword) {
-        msg.textContent = "❌ Passwords do not match!";
-        msg.className = "text-danger text-center";
-        return;
-      }
-
-      try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCred.user;
-
-        await setDoc(doc(db, "users", user.uid), {
-          fullName, email, username, phone, dob,
-          role: "student",   // ✅ Assign student role automatically
-          createdAt: new Date().toISOString()
-        });
-
-        msg.textContent = "✅ Account created successfully!";
-        msg.className = "text-success text-center";
-        setTimeout(() => { window.location.href = "lms-dashboard.html"; }, 1500);
-
-      } catch (error) {
-        let errorMessage = "";
-        switch (error.code) {
-          case "auth/email-already-in-use": errorMessage = "⚠️ Email already registered."; break;
-          case "auth/invalid-email": errorMessage = "❌ Invalid email address."; break;
-          case "auth/weak-password": errorMessage = "🔑 Password must be at least 6 characters."; break;
-          default: errorMessage = "❌ " + error.message;
-        }
-        msg.textContent = errorMessage;
-        msg.className = "text-danger text-center";
-      }
-    });
-  </script>
 </body>
 </html>
