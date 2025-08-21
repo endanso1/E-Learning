@@ -16,27 +16,35 @@
       color: #0c1d3c;
       border: none;
     }
+    .btn-primary:hover { background-color: #e6c200; }
     .form-section {
       background-color: #122850;
       padding: 20px;
       border-radius: 10px;
       margin-bottom: 30px;
     }
-    @media (max-width: 576px) {
-      h2.text-warning { font-size: 1.4rem; text-align: center; }
-      .btn-lg { width: 100%; font-size: 1rem; padding: 0.75rem 1.25rem; }
+    .question-box, .result-box {
+      padding: 15px;
+      background-color: #1b2f5a;
+      border-radius: 8px;
+      margin-bottom: 12px;
     }
   </style>
 </head>
 <body>
-  <a href="index.html" class="btn btn-primary btn-lg mt-4 mx-3 mb-3 px-5">Logout</a>
+  <!-- Header with logout -->
+  <div class="d-flex justify-content-between align-items-center px-4 py-3">
+    <h4 class="text-warning">🛠️ Admin Dashboard</h4>
+    <button id="logoutBtn" class="btn btn-danger">Logout</button>
+  </div>
 
-  <div class="container py-5">
-    <h2 class="text-warning mb-4">🛠️ Quiz Manager</h2>
+  <div class="container py-3">
+    <h2 class="text-warning mb-4">📘 Quiz Manager</h2>
 
     <!-- Quiz Form -->
     <div class="form-section">
       <form id="questionForm">
+        <input type="hidden" id="editId" value="" />
         <div class="mb-3">
           <label for="courseId" class="form-label">Course ID</label>
           <input type="text" class="form-control" id="courseId" required />
@@ -57,7 +65,8 @@
           <label for="explanation" class="form-label">Explanation</label>
           <textarea class="form-control" id="explanation" rows="2" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">➕ Add Question</button>
+        <button type="submit" id="submitBtn" class="btn btn-primary">➕ Add Question</button>
+        <button type="button" id="cancelEditBtn" class="btn btn-secondary" style="display:none;">❌ Cancel Edit</button>
       </form>
     </div>
 
@@ -73,11 +82,9 @@
   <!-- Firebase & Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
     import { 
-      getAuth, onAuthStateChanged, signOut 
-    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { 
-      getFirestore, collection, addDoc, getDocs, deleteDoc, doc, getDoc, query 
+      getFirestore, collection, addDoc, getDocs, deleteDoc, doc, getDoc, updateDoc, query 
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
     // ✅ Firebase Config
@@ -112,6 +119,10 @@
       const questionList = document.getElementById("questionList");
       questionList.innerHTML = "<p class='text-info'>⏳ Loading questions...</p>";
       const snapshot = await getDocs(query(collection(db, "questions")));
+      if (snapshot.empty) {
+        questionList.innerHTML = "<p class='text-muted'>No questions added yet.</p>";
+        return;
+      }
       const grouped = {};
       snapshot.forEach(docSnap => {
         const data = docSnap.data();
@@ -121,12 +132,20 @@
       questionList.innerHTML = "";
       for (let courseId in grouped) {
         const block = document.createElement("div");
-        block.innerHTML = `<h5 class="text-info">📘 Course ${courseId}</h5>`;
+        block.innerHTML = `<h5 class="text-info mt-3">📘 Course ${courseId}</h5>`;
         grouped[courseId].forEach((q, i) => {
           block.innerHTML += `
-            <div class='mb-2'>
-              <p><strong>Q${i+1}:</strong> ${q.question}<br>
-              <small class='text-muted'>Answer: ${q.answer}</small></p>
+            <div class='question-box'>
+              <p><strong>Q${i+1}:</strong> ${q.question}</p>
+              <ul>
+                ${q.options.map(opt => 
+                  `<li ${opt === q.answer ? "style='color:lightgreen;font-weight:bold;'" : ""}>
+                    ${opt}
+                  </li>`).join("")}
+              </ul>
+              <p><em>Answer:</em> <strong>${q.answer}</strong></p>
+              <p><small>${q.explanation}</small></p>
+              <button class='btn btn-sm btn-warning me-2' onclick='editQuestion("${q.id}")'>✏ Edit</button>
               <button class='btn btn-sm btn-danger' onclick='deleteQuestion("${q.id}")'>🗑 Delete</button>
             </div>`;
         });
@@ -141,38 +160,77 @@
       loadQuestions();
     };
 
-    // ➕ Add Question
+    // ✏ Edit Question
+    window.editQuestion = async function(id) {
+      const snap = await getDoc(doc(db, "questions", id));
+      if (!snap.exists()) return;
+      const q = snap.data();
+
+      document.getElementById("editId").value = id;
+      document.getElementById("courseId").value = q.courseId;
+      document.getElementById("questionText").value = q.question;
+      document.getElementById("options").value = q.options.join(", ");
+      document.getElementById("answer").value = q.answer;
+      document.getElementById("explanation").value = q.explanation;
+
+      document.getElementById("submitBtn").textContent = "💾 Update Question";
+      document.getElementById("cancelEditBtn").style.display = "inline-block";
+    };
+
+    // ❌ Cancel Edit
+    document.getElementById("cancelEditBtn").addEventListener("click", () => {
+      resetForm();
+    });
+
+    function resetForm() {
+      document.getElementById("editId").value = "";
+      document.getElementById("questionForm").reset();
+      document.getElementById("submitBtn").textContent = "➕ Add Question";
+      document.getElementById("cancelEditBtn").style.display = "none";
+    }
+
+    // ➕ / 💾 Add or Update Question
     const form = document.getElementById("questionForm");
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const editId = document.getElementById("editId").value;
       const courseId = document.getElementById("courseId").value.trim();
       const question = document.getElementById("questionText").value.trim();
       const options = document.getElementById("options").value.trim().split(",").map(o=>o.trim());
       const answer = document.getElementById("answer").value.trim();
       const explanation = document.getElementById("explanation").value.trim();
+
       if (!courseId || !question || options.length < 2 || !answer) {
         alert("⚠️ Please fill all fields properly.");
         return;
       }
-      await addDoc(collection(db, "questions"), { courseId, question, options, answer, explanation });
-      alert("✅ Question added successfully!");
-      form.reset();
+
+      if (editId) {
+        await updateDoc(doc(db, "questions", editId), { courseId, question, options, answer, explanation });
+        alert("✅ Question updated successfully!");
+      } else {
+        await addDoc(collection(db, "questions"), { courseId, question, options, answer, explanation });
+        alert("✅ Question added successfully!");
+      }
+
+      resetForm();
       loadQuestions();
     });
 
     // 📊 Load Results
     async function loadResults() {
       const resultsDiv = document.getElementById("resultsList");
-      resultsDiv.innerHTML = "";
+      resultsDiv.innerHTML = "<p class='text-info'>⏳ Loading results...</p>";
       const snapshot = await getDocs(collection(db, "results"));
       if (snapshot.empty) {
         resultsDiv.innerHTML = "<p class='text-muted'>No quiz results submitted yet.</p>";
         return;
       }
+      resultsDiv.innerHTML = "";
       snapshot.forEach(docSnap => {
         const data = docSnap.data();
         resultsDiv.innerHTML += `
-          <div class="mb-3 p-3 bg-dark rounded">
+          <div class="result-box">
             <strong>Name:</strong> ${data.name}<br/>
             <strong>Index No.:</strong> ${data.index}<br/>
             <strong>Course:</strong> ${data.courseId}<br/>
@@ -181,6 +239,12 @@
           </div>`;
       });
     }
+
+    // 🚪 Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "admin-login.html";
+    });
 
     // 🚀 Init
     loadQuestions();
