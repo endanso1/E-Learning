@@ -102,36 +102,63 @@
 
   <!-- Firebase SDKs -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { 
+    getAuth, 
+    signInWithEmailAndPassword 
+  } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { 
+    getFirestore, 
+    doc, 
+    getDoc 
+  } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
-      authDomain: "lms-platform-944d6.firebaseapp.com",
-      projectId: "lms-platform-944d6",
-      storageBucket: "lms-platform-944d6.appspot.com",
-      messagingSenderId: "273204688964",
-      appId: "1:273204688964:web:3373974c9c61fac3872411"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
+    authDomain: "lms-platform-944d6.firebaseapp.com",
+    projectId: "lms-platform-944d6",
+    storageBucket: "lms-platform-944d6.appspot.com",
+    messagingSenderId: "273204688964",
+    appId: "1:273204688964:web:3373974c9c61fac3872411"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    const form = document.getElementById("loginForm");
-    const message = document.getElementById("loginMessage");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+  const form = document.getElementById("loginForm");
+  const message = document.getElementById("loginMessage");
 
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    try {
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCred.user;
+
+      // ✅ Check role in Firestore
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists() && snap.data().role === "admin") {
         window.location.href = "admin-quiz.html";
-      } catch (err) {
-        message.textContent = "❌ " + err.message;
+      } else {
+        message.textContent = "🚫 Access denied. You are not an admin.";
       }
-    });
 
-  </script>
+    } catch (err) {
+      let errorMessage = "";
+      switch (err.code) {
+        case "auth/invalid-email": errorMessage = "❌ Invalid email address."; break;
+        case "auth/user-not-found": errorMessage = "⚠️ No account found with this email."; break;
+        case "auth/wrong-password": errorMessage = "🔑 Incorrect password."; break;
+        case "auth/too-many-requests": errorMessage = "🚫 Too many failed attempts. Try later."; break;
+        default: errorMessage = "❌ " + err.message;
+      }
+      message.textContent = errorMessage;
+    }
+  });
+</script>
+
 </body>
 </html>
