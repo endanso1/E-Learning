@@ -221,25 +221,33 @@
 
     // 📊 Load Results
     async function loadResults() {
-      const resultsDiv = document.getElementById("resultsList");
-      resultsDiv.innerHTML = "<p class='text-info'>⏳ Loading results...</p>";
-      const snapshot = await getDocs(collection(db, "results"));
-      if (snapshot.empty) {
-        resultsDiv.innerHTML = "<p class='text-muted'>No quiz results submitted yet.</p>";
-        return;
-      }
-      resultsDiv.innerHTML = "";
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        resultsDiv.innerHTML += `
-          <div class="result-box">
-            <strong>Name:</strong> ${data.name}<br/>
-            <strong>Index No.:</strong> ${data.index}<br/>
-            <strong>Course:</strong> ${data.courseId}<br/>
-            <strong>Score:</strong> ${data.score}/${data.total}<br/>
-            <strong>Submitted:</strong> ${new Date(data.timestamp).toLocaleString()}
-          </div>`;
-      });
+  const resultsDiv = document.getElementById("resultsList");
+  resultsDiv.innerHTML = "<p class='text-info'>⏳ Loading results...</p>";
+
+  const snapshot = await getDocs(collection(db, "results"));
+
+  if (snapshot.empty) {
+    resultsDiv.innerHTML = "<p class='text-muted'>No quiz results yet.</p>";
+    return;
+  }
+
+  resultsDiv.innerHTML = "";
+
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+
+    resultsDiv.innerHTML += `
+      <div class="mb-3 p-3 bg-dark rounded">
+        <strong>Name:</strong> ${data.name ?? "N/A"}<br>
+        <strong>Index No.:</strong> ${data.index ?? "N/A"}<br>
+        <strong>Course:</strong> ${data.courseId ?? "N/A"}<br>
+        <strong>Score:</strong> ${data.score}/${data.total}<br>
+        <strong>Submitted:</strong> ${
+          data.timestamp ? new Date(data.timestamp).toLocaleString() : "N/A"
+        }
+      </div>
+    `;
+  });
     }
 
     // 🚪 Logout
