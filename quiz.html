@@ -1,316 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quiz – Inside the Chip</title>
-    <link rel="icon" type="image/x-icon" href="logoGctu.png" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz – Inside the Chip</title>
+  <link rel="icon" type="image/x-icon" href="logoGctu.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-      body {
-        background-color: #0c1d3c;
-        color: #fff;
-        font-family: "Segoe UI", sans-serif;
-      }
-      .btn-primary {
-        background-color: #ffd700;
-        color: #0c1d3c;
-        border: none;
-      }
-      .btn-primary:hover {
-        background-color: #e6c200;
-      }
-      .question-box {
-        background-color: #122850;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-      }
+  <style>
+    body {
+      background-color: #0c1d3c;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .btn-primary {
+      background-color: #ffd700;
+      color: #0c1d3c;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #e6c200;
+    }
+    .question-box {
+      background-color: #122850;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
 
-      @media (max-width: 576px) {
-        h2 {
-          font-size: 1.5rem;
-          text-align: center;
-        }
-        .btn-primary {
-          width: 80%;
-          margin-left: auto;
-          margin-right: auto;
-          display: block;
-        }
-        .question-box {
-          padding: 15px;
-          font-size: 0.95rem;
-        }
-        .container {
-          padding: 0 1rem;
-        }
-      }
-    </style>
-  </head>
+    @media (max-width: 576px) {
+      h2 { font-size: 1.5rem; text-align: center; }
+      .btn-primary { width: 80%; margin-left: auto; margin-right: auto; display: block; }
+      .question-box { padding: 15px; font-size: 0.95rem; }
+      .container { padding: 0 1rem; }
+    }
+  </style>
+</head>
 
-  <body>
-    <a href="course.html" class="btn btn-primary btn-lg mt-4 mx-3 mb-3 px-5"
-      >Back</a
-    >
+<body>
+  <a href="course.html" class="btn btn-primary btn-lg mt-4 mx-3 mb-3 px-5">Back</a>
 
-    <div class="container py-5">
-      <h2 class="mb-4 text-warning">📋 Course Quiz</h2>
+  <div class="container py-5">
+    <h2 class="mb-4 text-warning">📋 Course Quiz</h2>
 
-      <!-- ✅ FORM WRAPPER ADDED -->
-      <form id="quizForm">
-        <div id="quizContainer"></div>
+    <!-- ✅ FORM WRAPPER ADDED -->
+    <form id="quizForm">
 
-        <button type="submit" class="btn btn-primary mt-3">Submit Quiz</button>
-      </form>
+      <div id="quizContainer"></div>
 
-      <!-- ✅ FIXED duplicate result div -->
-      <div id="result" class="mt-4 fw-bold"></div>
-    </div>
+      <button type="submit" class="btn btn-primary mt-3">Submit Quiz</button>
 
-    <!-- FIREBASE SCRIPT -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-      import {
-        getFirestore,
-        collection,
-        addDoc,
-      } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-      import {
-        getAuth,
-        onAuthStateChanged,
-      } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+    </form>
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
-        authDomain: "lms-platform-944d6.firebaseapp.com",
-        projectId: "lms-platform-944d6",
-        storageBucket: "lms-platform-944d6.appspot.com",
-        messagingSenderId: "273204688964",
-        appId: "1:273204688964:web:3373974c9c61fac3872411",
-      };
+    <!-- ✅ FIXED duplicate result div -->
+    <div id="result" class="mt-4 fw-bold"></div>
 
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      const auth = getAuth(app);
+  </div>
 
-      let currentUser = null;
+  <!-- FIREBASE SCRIPT -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
-      // 🔐 Ensure student is logged in (prevents Firestore permission errors)
-      onAuthStateChanged(auth, (user) => {
-        currentUser = user;
-      });
+    const firebaseConfig = {
+      apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
+      authDomain: "lms-platform-944d6.firebaseapp.com",
+      projectId: "lms-platform-944d6",
+      storageBucket: "lms-platform-944d6.appspot.com",
+      messagingSenderId: "273204688964",
+      appId: "1:273204688964:web:3373974c9c61fac3872411"
+    };
 
-      // QUIZ DATA
-      const quizData = {
-        1: [
-          {
-            question: "What does ALU stand for?",
-            options: [
-              "Arithmetic Logic Unit",
-              "Automatic Line Utility",
-              "Analog Loop Unit",
-              "Advanced Logic Unit",
-            ],
-            answer: "Arithmetic Logic Unit",
-          },
-          {
-            question: "Which unit controls the execution of instructions?",
-            options: ["Memory", "ALU", "Control Unit", "Bus"],
-            answer: "Control Unit",
-          },
-          {
-            question: "What is the primary function of the Control Unit (CU)?",
-            options: [
-              "Execute arithmetic operations",
-              "Store data",
-              "Decode instructions",
-              "Connect to the internet",
-            ],
-            answer: "Decode instructions",
-          },
-          {
-            question: "Which component handles logical comparisons in a CPU?",
-            options: ["Register", "Control Unit", "ALU", "Cache"],
-            answer: "ALU",
-          },
-          {
-            question: "Registers are used for:",
-            options: [
-              "Long-term storage",
-              "Temporary data storage",
-              "Networking",
-              "Cooling the CPU",
-            ],
-            answer: "Temporary data storage",
-          },
-          {
-            question: "What does 'fetch' mean in the instruction cycle?",
-            options: [
-              "Store data in memory",
-              "Retrieve instruction from memory",
-              "Perform calculation",
-              "Halt the program",
-            ],
-            answer: "Retrieve instruction from memory",
-          },
-        ],
-        2: [
-          {
-            question: "What is the main board used in Arduino projects?",
-            options: ["Raspberry Pi", "ESP32", "Arduino Uno", "STM32"],
-            answer: "Arduino Uno",
-          },
-          {
-            question: "What does PWM stand for?",
-            options: [
-              "Pulse Width Modulation",
-              "Power Wave Motion",
-              "Partial Wiring Method",
-              "Programmed Waveform Model",
-            ],
-            answer: "Pulse Width Modulation",
-          },
-          {
-            question: "Which language is used to program Arduino?",
-            options: ["Python", "Assembly", "C/C++", "Java"],
-            answer: "C/C++",
-          },
-          {
-            question: "What does digitalRead() do?",
-            options: [
-              "Writes analog",
-              "Reads digital pin",
-              "Starts PWM",
-              "Initializes serial",
-            ],
-            answer: "Reads a digital pin",
-          },
-          {
-            question: "Which is a digital output pin?",
-            options: ["A0", "A5", "13", "RX"],
-            answer: "13",
-          },
-          {
-            question: "Typical voltage for Arduino Uno?",
-            options: ["3.3V", "5V", "12V", "1.5V"],
-            answer: "5V",
-          },
-        ],
-        3: [
-          {
-            question: "First step in chip manufacturing?",
-            options: ["Packaging", "Simulation", "Design", "Doping"],
-            answer: "Design",
-          },
-          {
-            question: "Lithography is used for:",
-            options: [
-              "Soldering",
-              "Printing patterns",
-              "Cooling",
-              "Memory expansion",
-            ],
-            answer: "Printing chip patterns",
-          },
-          {
-            question: "Chip layout tool?",
-            options: ["Unity", "Cinema 4D", "EDA Software", "MATLAB"],
-            answer: "EDA Software",
-          },
-          {
-            question: "Purpose of ion implantation?",
-            options: [
-              "Increase power",
-              "Modify properties",
-              "Cool chip",
-              "Display graphics",
-            ],
-            answer: "Modify semiconductor properties",
-          },
-          {
-            question: "Adding metal layers is called:",
-            options: ["Packaging", "Doping", "Metallization", "Testing"],
-            answer: "Metallization",
-          },
-          {
-            question: "Why lithography?",
-            options: [
-              "Test chips",
-              "Package chips",
-              "Print tiny circuits",
-              "Clean chip",
-            ],
-            answer: "Print tiny circuits",
-          },
-        ],
-      };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-      // LOAD CORRECT QUIZ
-      const courseId = new URLSearchParams(window.location.search).get(
-        "course"
-      );
-      const questions = quizData[courseId];
-      const quizContainer = document.getElementById("quizContainer");
+    let currentUser = null;
 
-      if (questions) {
-        questions.forEach((q, i) => {
-          quizContainer.innerHTML += `
+    // 🔐 Ensure student is logged in (prevents Firestore permission errors)
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+    });
+
+    // QUIZ DATA
+    const quizData = {
+      1: [
+        { question: "What does ALU stand for?", options: ["Arithmetic Logic Unit", "Automatic Line Utility", "Analog Loop Unit", "Advanced Logic Unit"], answer: "Arithmetic Logic Unit" },
+        { question: "Which unit controls the execution of instructions?", options: ["Memory", "ALU", "Control Unit", "Bus"], answer: "Control Unit" },
+        { question: "What is the primary function of the Control Unit (CU)?", options: ["Execute arithmetic operations", "Store data", "Decode instructions", "Connect to the internet"], answer: "Decode instructions" },
+        { question: "Which component handles logical comparisons in a CPU?", options: ["Register", "Control Unit", "ALU", "Cache"], answer: "ALU" },
+        { question: "Registers are used for:", options: ["Long-term storage", "Temporary data storage", "Networking", "Cooling the CPU"], answer: "Temporary data storage" },
+        { question: "What does 'fetch' mean in the instruction cycle?", options: ["Store data in memory", "Retrieve instruction from memory", "Perform calculation", "Halt the program"], answer: "Retrieve instruction from memory" }
+      ],
+      2: [
+        { question: "What is the main board used in Arduino projects?", options: ["Raspberry Pi", "ESP32", "Arduino Uno", "STM32"], answer: "Arduino Uno" },
+        { question: "What does PWM stand for?", options: ["Pulse Width Modulation", "Power Wave Motion", "Partial Wiring Method", "Programmed Waveform Model"], answer: "Pulse Width Modulation" },
+        { question: "Which language is used to program Arduino?", options: ["Python", "Assembly", "C/C++", "Java"], answer: "C/C++" },
+        { question: "What does digitalRead() do?", options: ["Writes analog", "Reads digital pin", "Starts PWM", "Initializes serial"], answer: "Reads a digital pin" },
+        { question: "Which is a digital output pin?", options: ["A0", "A5", "13", "RX"], answer: "13" },
+        { question: "Typical voltage for Arduino Uno?", options: ["3.3V", "5V", "12V", "1.5V"], answer: "5V" }
+      ],
+      3: [
+        { question: "First step in chip manufacturing?", options: ["Packaging", "Simulation", "Design", "Doping"], answer: "Design" },
+        { question: "Lithography is used for:", options: ["Soldering", "Printing patterns", "Cooling", "Memory expansion"], answer: "Printing chip patterns" },
+        { question: "Chip layout tool?", options: ["Unity", "Cinema 4D", "EDA Software", "MATLAB"], answer: "EDA Software" },
+        { question: "Purpose of ion implantation?", options: ["Increase power", "Modify properties", "Cool chip", "Display graphics"], answer: "Modify semiconductor properties" },
+        { question: "Adding metal layers is called:", options: ["Packaging", "Doping", "Metallization", "Testing"], answer: "Metallization" },
+        { question: "Why lithography?", options: ["Test chips", "Package chips", "Print tiny circuits", "Clean chip"], answer: "Print tiny circuits" }
+      ]
+    };
+
+    // LOAD CORRECT QUIZ
+    const courseId = new URLSearchParams(window.location.search).get("course");
+    const questions = quizData[courseId];
+    const quizContainer = document.getElementById("quizContainer");
+
+    if (questions) {
+      questions.forEach((q, i) => {
+        quizContainer.innerHTML += `
           <div class="question-box">
             <p><strong>Q${i + 1}:</strong> ${q.question}</p>
-            ${q.options
-              .map(
-                (option) => `
+            ${q.options.map(option => `
               <div class="form-check">
                 <input class="form-check-input" type="radio" name="q${i}" value="${option}" required>
                 <label class="form-check-label">${option}</label>
               </div>
-            `
-              )
-              .join("")}
+            `).join("")}
           </div>
         `;
-        });
-      } else {
-        quizContainer.innerHTML = "<p>❌ Invalid or missing course.</p>";
+      });
+    } else {
+      quizContainer.innerHTML = "<p>❌ Invalid or missing course.</p>";
+    }
+
+    // SUBMIT QUIZ
+    document.getElementById("quizForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!currentUser) {
+        alert("❌ You must be logged in to submit the quiz.");
+        return;
       }
 
-      // SUBMIT QUIZ
-      document
-        .getElementById("quizForm")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
+      let score = 0;
+      questions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected && selected.value === q.answer) score++;
+      });
 
-          if (!currentUser) {
-            alert("❌ You must be logged in to submit the quiz.");
-            return;
-          }
+      await addDoc(collection(db, "results"), {
+        uid: currentUser.uid,
+        course: courseId,
+        score: score,
+        total: questions.length,
+        timestamp: new Date()
+      });
 
-          let score = 0;
-          questions.forEach((q, i) => {
-            const selected = document.querySelector(
-              `input[name="q${i}"]:checked`
-            );
-            if (selected && selected.value === q.answer) score++;
-          });
+      document.getElementById("result").innerHTML =
+        `✅ You scored <span class="text-warning">${score}</span> out of ${questions.length}`;
+    });
+  </script>
 
-          await addDoc(collection(db, "results"), {
-            name: studentName,
-            index: indexNumber,
-            courseId: courseId,
-            score: score,
-            total: questions.length,
-            timestamp: new Date().toISOString(),
-          });
-
-          document.getElementById(
-            "result"
-          ).innerHTML = `✅ You scored <span class="text-warning">${score}</span> out of ${questions.length}`;
-        });
-    </script>
-  </body>
+</body>
 </html>
