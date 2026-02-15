@@ -1,256 +1,320 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin – Quiz Manager</title>
-      <link rel="icon" type="image/x-icon" href="logoGctu.png" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin – Quiz Manager</title>
+    <link rel="icon" type="image/x-icon" href="logoGctu.png" />
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <style>
-    body {
-      background-color: #0c1d3c;
-      color: #fff;
-      font-family: "Segoe UI", sans-serif;
-    }
-    .btn-primary {
-      background-color: #ffd700;
-      color: #0c1d3c;
-      border: none;
-    }
-    .btn-primary:hover { background-color: #e6c200; }
-    .form-section {
-      background-color: #122850;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-    }
-    .question-box, .result-box {
-      padding: 15px;
-      background-color: #1b2f5a;
-      border-radius: 8px;
-      margin-bottom: 12px;
-    }
-  </style>
-</head>
-<body>
-  <!-- Header with logout -->
-  <div class="d-flex justify-content-between align-items-center px-4 py-3">
-    <h4 class="text-warning">🛠️ Admin Dashboard</h4>
-    <button id="logoutBtn" class="btn btn-danger">Logout</button>
-  </div>
-
-  <div class="container py-3">
-    <h2 class="text-warning mb-4">📘 Quiz Manager</h2>
-
-    <!-- Quiz Form -->
-    <div class="form-section">
-      <form id="questionForm">
-        <input type="hidden" id="editId" value="" />
-        <div class="mb-3">
-          <label for="courseId" class="form-label">Course ID</label>
-          <input type="text" class="form-control" id="courseId" required />
-        </div>
-        <div class="mb-3">
-          <label for="questionText" class="form-label">Question</label>
-          <input type="text" class="form-control" id="questionText" required />
-        </div>
-        <div class="mb-3">
-          <label for="options" class="form-label">Options (comma-separated)</label>
-          <input type="text" class="form-control" id="options" required />
-        </div>
-        <div class="mb-3">
-          <label for="answer" class="form-label">Correct Answer</label>
-          <input type="text" class="form-control" id="answer" required />
-        </div>
-        <div class="mb-3">
-          <label for="explanation" class="form-label">Explanation</label>
-          <textarea class="form-control" id="explanation" rows="2" required></textarea>
-        </div>
-        <button type="submit" id="submitBtn" class="btn btn-primary">➕ Add Question</button>
-        <button type="button" id="cancelEditBtn" class="btn btn-secondary" style="display:none;">❌ Cancel Edit</button>
-      </form>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #0c1d3c;
+        color: #fff;
+        font-family: "Segoe UI", sans-serif;
+      }
+      .btn-primary {
+        background-color: #ffd700;
+        color: #0c1d3c;
+        border: none;
+      }
+      .btn-primary:hover {
+        background-color: #e6c200;
+      }
+      .form-section {
+        background-color: #122850;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+      }
+      .question-box,
+      .result-box {
+        padding: 15px;
+        background-color: #1b2f5a;
+        border-radius: 8px;
+        margin-bottom: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header with logout -->
+    <div class="d-flex justify-content-between align-items-center px-4 py-3">
+      <h4 class="text-warning">🛠️ Admin Dashboard</h4>
+      <button id="logoutBtn" class="btn btn-danger">Logout</button>
     </div>
 
-    <!-- Display Questions -->
-    <h4 class="text-warning">📋 Course Questions</h4>
-    <div id="questionList"></div>
+    <div class="container py-3">
+      <h2 class="text-warning mb-4">📘 Quiz Manager</h2>
 
-    <!-- Display Results -->
-    <h4 class="text-warning mt-5">🧑‍🎓 Student Quiz Results</h4>
-    <div id="resultsList"></div>
-  </div>
+      <!-- Quiz Form -->
+      <div class="form-section">
+        <form id="questionForm">
+          <input type="hidden" id="editId" value="" />
+          <div class="mb-3">
+            <label for="courseId" class="form-label">Course ID</label>
+            <input type="text" class="form-control" id="courseId" required />
+          </div>
+          <div class="mb-3">
+            <label for="questionText" class="form-label">Question</label>
+            <input
+              type="text"
+              class="form-control"
+              id="questionText"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="options" class="form-label"
+              >Options (comma-separated)</label
+            >
+            <input type="text" class="form-control" id="options" required />
+          </div>
+          <div class="mb-3">
+            <label for="answer" class="form-label">Correct Answer</label>
+            <input type="text" class="form-control" id="answer" required />
+          </div>
+          <div class="mb-3">
+            <label for="explanation" class="form-label">Explanation</label>
+            <textarea
+              class="form-control"
+              id="explanation"
+              rows="2"
+              required
+            ></textarea>
+          </div>
+          <button type="submit" id="submitBtn" class="btn btn-primary">
+            ➕ Add Question
+          </button>
+          <button
+            type="button"
+            id="cancelEditBtn"
+            class="btn btn-secondary"
+            style="display: none"
+          >
+            ❌ Cancel Edit
+          </button>
+        </form>
+      </div>
 
-  <!-- Firebase & Logic -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { 
-      getFirestore, collection, addDoc, getDocs, deleteDoc, doc, getDoc, updateDoc, query 
-    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+      <!-- Display Questions -->
+      <h4 class="text-warning">📋 Course Questions</h4>
+      <div id="questionList"></div>
 
-    // ✅ Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
-      authDomain: "lms-platform-944d6.firebaseapp.com",
-      projectId: "lms-platform-944d6",
-      storageBucket: "lms-platform-944d6.appspot.com",
-      messagingSenderId: "273204688964",
-      appId: "1:273204688964:web:3373974c9c61fac3872411"
-    };
+      <!-- Display Results -->
+      <h4 class="text-warning mt-5">🧑‍🎓 Student Quiz Results</h4>
+      <div id="resultsList"></div>
+    </div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    <!-- Firebase & Logic -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+        deleteDoc,
+        doc,
+        getDoc,
+        updateDoc,
+        query,
+      } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    // 🔒 Protect page with Role Check
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "admin-login.html"; 
-        return;
-      }
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (!snap.exists() || snap.data().role !== "admin") {
-        alert("Access denied. Admins only.");
-        window.location.href = "login.html";
-      }
-    });
+      // ✅ Firebase Config
+      const firebaseConfig = {
+        apiKey: "AIzaSyCd6BwNWOJ5T61t90Q5n-r66ljlNgoLhSs",
+        authDomain: "lms-platform-944d6.firebaseapp.com",
+        projectId: "lms-platform-944d6",
+        storageBucket: "lms-platform-944d6.appspot.com",
+        messagingSenderId: "273204688964",
+        appId: "1:273204688964:web:3373974c9c61fac3872411",
+      };
 
-    // 🔁 Load Questions
-    async function loadQuestions() {
-      const questionList = document.getElementById("questionList");
-      questionList.innerHTML = "<p class='text-info'>⏳ Loading questions...</p>";
-      const snapshot = await getDocs(query(collection(db, "questions")));
-      if (snapshot.empty) {
-        questionList.innerHTML = "<p class='text-muted'>No questions added yet.</p>";
-        return;
-      }
-      const grouped = {};
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        if (!grouped[data.courseId]) grouped[data.courseId] = [];
-        grouped[data.courseId].push({ ...data, id: docSnap.id });
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      // 🔒 Protect page with Role Check
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          window.location.href = "admin-login.html";
+          return;
+        }
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (!snap.exists() || snap.data().role !== "admin") {
+          alert("Access denied. Admins only.");
+          window.location.href = "login.html";
+        }
       });
-      questionList.innerHTML = "";
-      for (let courseId in grouped) {
-        const block = document.createElement("div");
-        block.innerHTML = `<h5 class="text-info mt-3">📘 Course ${courseId}</h5>`;
-        grouped[courseId].forEach((q, i) => {
-          block.innerHTML += `
+
+      // 🔁 Load Questions
+      async function loadQuestions() {
+        const questionList = document.getElementById("questionList");
+        questionList.innerHTML =
+          "<p class='text-info'>⏳ Loading questions...</p>";
+        const snapshot = await getDocs(query(collection(db, "questions")));
+        if (snapshot.empty) {
+          questionList.innerHTML =
+            "<p class='text-muted'>No questions added yet.</p>";
+          return;
+        }
+        const grouped = {};
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          if (!grouped[data.courseId]) grouped[data.courseId] = [];
+          grouped[data.courseId].push({ ...data, id: docSnap.id });
+        });
+        questionList.innerHTML = "";
+        for (let courseId in grouped) {
+          const block = document.createElement("div");
+          block.innerHTML = `<h5 class="text-info mt-3">📘 Course ${courseId}</h5>`;
+          grouped[courseId].forEach((q, i) => {
+            block.innerHTML += `
             <div class='question-box'>
-              <p><strong>Q${i+1}:</strong> ${q.question}</p>
+              <p><strong>Q${i + 1}:</strong> ${q.question}</p>
               <ul>
-                ${q.options.map(opt => 
-                  `<li ${opt === q.answer ? "style='color:lightgreen;font-weight:bold;'" : ""}>
+                ${q.options
+                  .map(
+                    (opt) =>
+                      `<li ${opt === q.answer ? "style='color:lightgreen;font-weight:bold;'" : ""}>
                     ${opt}
-                  </li>`).join("")}
+                  </li>`,
+                  )
+                  .join("")}
               </ul>
               <p><em>Answer:</em> <strong>${q.answer}</strong></p>
               <p><small>${q.explanation}</small></p>
               <button class='btn btn-sm btn-warning me-2' onclick='editQuestion("${q.id}")'>✏ Edit</button>
               <button class='btn btn-sm btn-danger' onclick='deleteQuestion("${q.id}")'>🗑 Delete</button>
             </div>`;
-        });
-        questionList.appendChild(block);
-      }
-    }
-
-    // 🧽 Delete Question
-    window.deleteQuestion = async function(id) {
-      await deleteDoc(doc(db, "questions", id));
-      alert("❌ Question deleted.");
-      loadQuestions();
-    };
-
-    // ✏ Edit Question
-    window.editQuestion = async function(id) {
-      const snap = await getDoc(doc(db, "questions", id));
-      if (!snap.exists()) return;
-      const q = snap.data();
-
-      document.getElementById("editId").value = id;
-      document.getElementById("courseId").value = q.courseId;
-      document.getElementById("questionText").value = q.question;
-      document.getElementById("options").value = q.options.join(", ");
-      document.getElementById("answer").value = q.answer;
-      document.getElementById("explanation").value = q.explanation;
-
-      document.getElementById("submitBtn").textContent = "💾 Update Question";
-      document.getElementById("cancelEditBtn").style.display = "inline-block";
-    };
-
-    // ❌ Cancel Edit
-    document.getElementById("cancelEditBtn").addEventListener("click", () => {
-      resetForm();
-    });
-
-    function resetForm() {
-      document.getElementById("editId").value = "";
-      document.getElementById("questionForm").reset();
-      document.getElementById("submitBtn").textContent = "➕ Add Question";
-      document.getElementById("cancelEditBtn").style.display = "none";
-    }
-
-    // ➕ / 💾 Add or Update Question
-    const form = document.getElementById("questionForm");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const editId = document.getElementById("editId").value;
-      const courseId = document.getElementById("courseId").value.trim();
-      const question = document.getElementById("questionText").value.trim();
-      const options = document.getElementById("options").value.trim().split(",").map(o=>o.trim());
-      const answer = document.getElementById("answer").value.trim();
-      const explanation = document.getElementById("explanation").value.trim();
-
-      if (!courseId || !question || options.length < 2 || !answer) {
-        alert("⚠️ Please fill all fields properly.");
-        return;
+          });
+          questionList.appendChild(block);
+        }
       }
 
-      if (editId) {
-        await updateDoc(doc(db, "questions", editId), { courseId, question, options, answer, explanation });
-        alert("✅ Question updated successfully!");
-      } else {
-        await addDoc(collection(db, "questions"), { courseId, question, options, answer, explanation });
-        alert("✅ Question added successfully!");
-      }
+      // 🧽 Delete Question
+      window.deleteQuestion = async function (id) {
+        await deleteDoc(doc(db, "questions", id));
+        alert("❌ Question deleted.");
+        loadQuestions();
+      };
 
-      resetForm();
-      loadQuestions();
-    });
+      // ✏ Edit Question
+      window.editQuestion = async function (id) {
+        const snap = await getDoc(doc(db, "questions", id));
+        if (!snap.exists()) return;
+        const q = snap.data();
 
-    // 📊 Load Results
-    async function loadResults() {
-      const resultsDiv = document.getElementById("resultsList");
-      resultsDiv.innerHTML = "<p class='text-info'>⏳ Loading results...</p>";
-      const snapshot = await getDocs(collection(db, "results"));
-      if (snapshot.empty) {
-        resultsDiv.innerHTML = "<p class='text-muted'>No quiz results submitted yet.</p>";
-        return;
-      }
-      resultsDiv.innerHTML = "";
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        resultsDiv.innerHTML += `
-          <div class="result-box">
-            <strong>Name:</strong> ${data.name}<br/>
-            <strong>Index No.:</strong> ${data.index}<br/>
-            <strong>Course:</strong> ${data.courseId}<br/>
-            <strong>Score:</strong> ${data.score}/${data.total}<br/>
-            <strong>Submitted:</strong> ${new Date(data.timestamp).toLocaleString()}
-          </div>`;
+        document.getElementById("editId").value = id;
+        document.getElementById("courseId").value = q.courseId;
+        document.getElementById("questionText").value = q.question;
+        document.getElementById("options").value = q.options.join(", ");
+        document.getElementById("answer").value = q.answer;
+        document.getElementById("explanation").value = q.explanation;
+
+        document.getElementById("submitBtn").textContent = "💾 Update Question";
+        document.getElementById("cancelEditBtn").style.display = "inline-block";
+      };
+
+      // ❌ Cancel Edit
+      document.getElementById("cancelEditBtn").addEventListener("click", () => {
+        resetForm();
       });
-    }
 
-    // 🚪 Logout
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "admin-login.html";
-    });
+      function resetForm() {
+        document.getElementById("editId").value = "";
+        document.getElementById("questionForm").reset();
+        document.getElementById("submitBtn").textContent = "➕ Add Question";
+        document.getElementById("cancelEditBtn").style.display = "none";
+      }
 
-    // 🚀 Init
-    loadQuestions();
-    loadResults();
-  </script>
-</body>
+      // ➕ / 💾 Add or Update Question
+      const form = document.getElementById("questionForm");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const editId = document.getElementById("editId").value;
+        const courseId = document.getElementById("courseId").value.trim();
+        const question = document.getElementById("questionText").value.trim();
+        const options = document
+          .getElementById("options")
+          .value.trim()
+          .split(",")
+          .map((o) => o.trim());
+        const answer = document.getElementById("answer").value.trim();
+        const explanation = document.getElementById("explanation").value.trim();
+
+        if (!courseId || !question || options.length < 2 || !answer) {
+          alert("⚠️ Please fill all fields properly.");
+          return;
+        }
+
+        if (editId) {
+          await updateDoc(doc(db, "questions", editId), {
+            courseId,
+            question,
+            options,
+            answer,
+            explanation,
+          });
+          alert("✅ Question updated successfully!");
+        } else {
+          await addDoc(collection(db, "questions"), {
+            courseId,
+            question,
+            options,
+            answer,
+            explanation,
+          });
+          alert("✅ Question added successfully!");
+        }
+
+        resetForm();
+        loadQuestions();
+      });
+
+      // 📊 Load Results
+      async function loadResults() {
+        const resultsDiv = document.getElementById("resultsList");
+        resultsDiv.innerHTML = "<p class='text-info'>⏳ Loading results...</p>";
+        const snapshot = await getDocs(collection(db, "results"));
+        if (snapshot.empty) {
+          resultsDiv.innerHTML =
+            "<p class='text-muted'>No quiz results submitted yet.</p>";
+          return;
+        }
+        resultsDiv.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          resultsDiv.innerHTML += `
+  <div class="result-box">
+    <strong>Name:</strong> ${data.name || "N/A"}<br/>
+    <strong>Index No.:</strong> ${data.index || "N/A"}<br/>
+    <strong>Course:</strong> ${data.courseId || "N/A"}<br/>
+    <strong>Score:</strong> ${data.score}/${data.total}<br/>
+    <strong>Submitted:</strong> ${data.timestamp ? data.timestamp.toDate().toLocaleString() : "N/A"}
+  </div>`;
+        });
+      }
+
+      // 🚪 Logout
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", async () => {
+          await signOut(auth);
+          window.location.href = "admin-login.html";
+        });
+
+      // 🚀 Init
+      loadQuestions();
+      loadResults();
+    </script>
+  </body>
 </html>
